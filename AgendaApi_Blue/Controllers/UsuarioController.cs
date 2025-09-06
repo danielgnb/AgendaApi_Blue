@@ -15,14 +15,16 @@ namespace AgendaApi_Blue.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly IRabbitMqService _rabbitMqService;
         private readonly IUsuarioService _usuarioService;
         private readonly IValidator<Usuario> _usuarioValidator;
 
-        public UsuarioController(IValidator<Usuario> usuarioValidator, IUsuarioService usuarioService, IMapper mapper)
+        public UsuarioController(IValidator<Usuario> usuarioValidator, IUsuarioService usuarioService, IMapper mapper, IRabbitMqService rabbitMqService)
         {
             _usuarioValidator = usuarioValidator;
             _usuarioService = usuarioService;
             _mapper = mapper;
+            _rabbitMqService = rabbitMqService;
         }
 
         [HttpPost]
@@ -41,6 +43,7 @@ namespace AgendaApi_Blue.Controllers
                 if (!sucesso)
                     return BadRequest("Usuário já existe.");
 
+                _rabbitMqService.EnviarMensagem($"Usuário criado: {usuario.Username}");
                 return CreatedAtAction(nameof(CriarUsuario), "Usuário criado com sucesso.");
             }
             catch (DbUpdateException)
@@ -64,6 +67,7 @@ namespace AgendaApi_Blue.Controllers
                 if (!sucesso)
                     return NotFound("Usuário não encontrado.");
 
+                _rabbitMqService.EnviarMensagem($"Usuário excluido: {id}");
                 return Ok("Usuário excluido.");
             }
             catch (DbUpdateException)
