@@ -9,7 +9,7 @@ using AgendaApi_Blue.Services.Interfaces;
 using FluentValidation;
 using AgendaApi_Blue.Validations;
 using AgendaApi_Blue.Repositories.Interfaces;
-using System;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +59,7 @@ builder.Services.AddScoped<IContatoRepository, ContatoRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
+builder.Services.AddSingleton<IRabbitMqService, RabbitMqService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Fluent Validation
@@ -83,6 +84,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
         };
     });
+
+// Configuração para RabbitMq
+builder.Services.AddSingleton<IConnectionFactory>(provider =>
+{
+    var factory = new ConnectionFactory()
+    {
+        HostName = builder.Configuration["RabbitMQ:HostName"],
+        Port = 5672,
+        UserName = builder.Configuration["RabbitMQ:UserName"],
+        Password = builder.Configuration["RabbitMQ:Password"]
+    };
+    return factory;
+});
+
+builder.Services.AddSingleton<IConnection>(provider =>
+{
+    var factory = provider.GetRequiredService<IConnectionFactory>();
+    return factory.CreateConnection();
+});
+
+builder.Services.AddSingleton<IModel>(provider =>
+{
+    var connection = provider.GetRequiredService<IConnection>();
+    return connection.CreateModel();
+});
 
 var app = builder.Build();
 

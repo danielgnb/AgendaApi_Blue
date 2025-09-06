@@ -17,14 +17,16 @@ namespace AgendaApi_Blue.Controllers
     public class ContatoController : ControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly IRabbitMqService _rabbitMqService;
         private readonly IContatoService _contatoService;
         private readonly IValidator<Contato> _contatoValidator;
 
-        public ContatoController(IContatoService _contatoService, IValidator<Contato> _contatoValidator, IMapper _mapper)
+        public ContatoController(IContatoService _contatoService, IValidator<Contato> _contatoValidator, IMapper _mapper, IRabbitMqService _rabbitMqService)
         {
             this._contatoService = _contatoService;
             this._contatoValidator = _contatoValidator;
             this._mapper = _mapper;
+            this._rabbitMqService = _rabbitMqService;
         }
 
         [HttpGet]
@@ -122,9 +124,14 @@ namespace AgendaApi_Blue.Controllers
                 var sucesso = await _contatoService.CriarContato(contato);
 
                 if (sucesso)
+                {
+                    _rabbitMqService.EnviarMensagem($"Novo contato criado: {contato.Nome}");
                     return CreatedAtAction(nameof(CriarContato), "Contato criado com sucesso.");
+                }
                 else
+                {
                     return BadRequest("Erro ao criar o contato.");
+                }
             }
             catch (SqlException ex) when (ex.Number == -2)
             {
@@ -162,7 +169,10 @@ namespace AgendaApi_Blue.Controllers
                 var sucesso = await _contatoService.EditarContato(contato);
 
                 if (sucesso)
+                {
+                    _rabbitMqService.EnviarMensagem($"Contato editado: {contato.Nome}");
                     return Ok(contato);
+                }
                 else
                     return NotFound("Contato não encontrado.");
             }
@@ -188,9 +198,14 @@ namespace AgendaApi_Blue.Controllers
                 var sucesso = await _contatoService.RemoverContato(id);
 
                 if (sucesso)
-                    return NoContent();
+                {
+                    _rabbitMqService.EnviarMensagem($"Contato removido: {id}");
+                    return Ok("Contato removido com sucesso.");
+                }
                 else
+                {
                     return NotFound("Contato não encontrado.");
+                }
             }
             catch (SqlException ex) when (ex.Number == -2)
             {
