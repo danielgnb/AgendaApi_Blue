@@ -13,14 +13,12 @@ using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 
 // Configuração de Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    // Adiciona a configuração do Bearer Token no Swagger
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
@@ -69,6 +67,16 @@ builder.Services.AddValidatorsFromAssemblyContaining<ContatoValidator>();
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Configuração de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVueApp",
+        policy => policy
+            .WithOrigins("http://localhost:8081")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 // Configuração de autenticação JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -112,13 +120,14 @@ builder.Services.AddSingleton<IModel>(provider =>
 
 var app = builder.Build();
 
+app.UseCors("AllowVueApp");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        // Configura o SwaggerUI para pedir o Bearer token
         options.OAuthClientId("SwaggerOAuth");
         options.OAuthAppName("Swagger UI");
     });
@@ -127,7 +136,6 @@ if (app.Environment.IsDevelopment())
 // Configurações de middlewares
 app.UseHttpsRedirection();
 
-// Ativando a autenticação e autorização
 app.UseAuthentication();
 app.UseAuthorization();
 
