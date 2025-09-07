@@ -27,5 +27,10 @@ namespace AgendaApi_Blue.Services
         {
             return _usuarioRepository.ExcluirUsuario(id);
         }
+
+        public Task<Usuario?> ObterUsuario(int id)
+        {
+            return _usuarioRepository.ObterUsuario(id);
+        }
     }
 }

@@ -52,5 +52,13 @@ namespace AgendaApi_Blue.Repositories
             return true;
         }
 
+        public async Task<Usuario?> ObterUsuario(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+                return null;
+
+            return usuario;
+        }
     }
 }

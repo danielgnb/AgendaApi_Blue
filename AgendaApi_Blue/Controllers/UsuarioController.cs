@@ -7,6 +7,9 @@ using AgendaApi_Blue.Services.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using AgendaApi_Blue.Services;
+using Microsoft.Data.SqlClient;
+using System.Net;
 
 namespace AgendaApi_Blue.Controllers
 {
@@ -77,6 +80,28 @@ namespace AgendaApi_Blue.Controllers
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro inesperado.");
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUsuario(int id)
+        {
+            try
+            {
+                var usuario = await _usuarioService.ObterUsuario(id);
+                return Ok(usuario);
+            }
+            catch (SqlException ex) when (ex.Number == -2)
+            {
+                return StatusCode((int)HttpStatusCode.RequestTimeout, "O tempo de conexão com o banco de dados expirou. Tente novamente mais tarde.");
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Erro ao se comunicar com o banco de dados. Tente novamente mais tarde.");
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Ocorreu um erro inesperado. Tente novamente mais tarde.");
             }
         }
     }
