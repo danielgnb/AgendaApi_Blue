@@ -1,7 +1,6 @@
 ﻿using AgendaApi_Blue.Data;
 using AgendaApi_Blue.Models;
 using AgendaApi_Blue.Repositories.Interfaces;
-using AgendaApi_Blue.Utilitaries;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgendaApi_Blue.Repositories
@@ -16,18 +15,14 @@ namespace AgendaApi_Blue.Repositories
 
         public async Task<Usuario?> ValidarUsuario(Usuario usuario)
         {
-            string senhaHash = Utils.GerarHashSenha(usuario.Password);
-
             return await _context.Usuarios.Where(u => u.Username == usuario.Username
-                                                && u.Password == senhaHash).FirstOrDefaultAsync();
+                                                && u.Password == usuario.Password).FirstOrDefaultAsync();
         }
 
         public async Task<bool> CriarUsuario(Usuario usuario)
         {
             try
             {
-                usuario.Password = Utils.GerarHashSenha(usuario.Password);
-
                 _context.Usuarios.Add(usuario);
                 await _context.SaveChangesAsync();
 
@@ -59,6 +54,21 @@ namespace AgendaApi_Blue.Repositories
                 return null;
 
             return usuario;
+        }
+
+        public async Task<bool> EditarUsuario(Usuario user)
+        {
+            try
+            {
+                _context.Usuarios.Update(user);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao editar usuário", ex);
+            }
         }
     }
 }

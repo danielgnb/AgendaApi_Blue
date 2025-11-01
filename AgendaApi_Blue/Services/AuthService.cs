@@ -1,9 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using AgendaApi_Blue.Services.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using AgendaApi_Blue.Services.Interfaces;
+using AgendaApi_Blue.Utilitaries;
 using System.Security.Claims;
 using System.Text;
-using AgendaApi_Blue.Models;
 
 namespace AgendaApi_Blue.Services
 {
@@ -16,12 +16,13 @@ namespace AgendaApi_Blue.Services
             _configuration = configuration;
         }
 
-        public string GerarToken(string username, int idUsuario)
+        public string GerarToken(string username, int idUsuario, Enums.Role role)
         {
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, username),
                 new Claim("UsuarioId", idUsuario.ToString()),
+                new Claim(ClaimTypes.Role, role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));

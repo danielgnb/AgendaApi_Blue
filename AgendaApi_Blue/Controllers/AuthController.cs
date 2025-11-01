@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AgendaApi_Blue.Services;
+﻿using AgendaApi_Blue.Models.ViewModels.Auth;
+using AgendaApi_Blue.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using AgendaApi_Blue.Models;
 using FluentValidation;
-using AgendaApi_Blue.Services.Interfaces;
-using AgendaApi_Blue.Models.ViewModels.Usuario;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 
 namespace AgendaApi_Blue.Controllers
 {
@@ -27,7 +25,7 @@ namespace AgendaApi_Blue.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UsuarioViewModel request)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel request)
         {
             try
             {
@@ -41,7 +39,7 @@ namespace AgendaApi_Blue.Controllers
                 if (validateUser is null)
                     return Unauthorized("Credenciais inválidas.");
 
-                var token = _authService.GerarToken(validateUser.Username, validateUser.Id);
+                var token = _authService.GerarToken(validateUser.Username, validateUser.Id, validateUser.Role);
                 return Ok(new { Token = token });
             }
             catch (ValidationException ex)
