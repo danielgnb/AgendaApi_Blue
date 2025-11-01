@@ -47,7 +47,16 @@ builder.Services.AddSwaggerGen(options =>
 // Configuração do DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionRDS"));
+    var environment = builder.Environment.EnvironmentName;
+
+    if (environment == Environments.Development)
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionLocal"));
+    }
+    else if (environment == Environments.Production)
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionRDS"));
+    }
 });
 
 // Injeção de dependência para serviços e repositórios
