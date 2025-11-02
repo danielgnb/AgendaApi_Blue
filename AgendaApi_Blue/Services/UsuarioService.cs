@@ -3,7 +3,6 @@ using AgendaApi_Blue.Services.Interfaces;
 using AgendaApi_Blue.Utilitaries;
 using AgendaApi_Blue.Exceptions;
 using AgendaApi_Blue.Models;
-using System.Security.Claims;
 
 namespace AgendaApi_Blue.Services
 {
@@ -51,19 +50,6 @@ namespace AgendaApi_Blue.Services
             user.Role = usuario.Role;
 
             return await _usuarioRepository.EditarUsuario(user);
-        }
-
-        public async Task ValidarEditar(int usuarioLogado, string roleLogada, int id)
-        {
-            if (roleLogada == nameof(Enums.Role.Admin))
-                return;
-
-            var usuarioAtual = await ObterUsuario(id);
-            if (usuarioAtual == null)
-                throw new UsuarioNaoEncontradoException("Usuário não encontrado.");
-
-            if (usuarioAtual.Id != usuarioLogado)
-                throw new UsuarioNaoAutorizadoException("Você não tem permissão para editar este usuário.");
         }
     }
 }

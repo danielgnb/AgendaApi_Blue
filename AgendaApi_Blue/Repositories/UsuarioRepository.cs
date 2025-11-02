@@ -1,7 +1,7 @@
-﻿using AgendaApi_Blue.Data;
-using AgendaApi_Blue.Models;
-using AgendaApi_Blue.Repositories.Interfaces;
+﻿using AgendaApi_Blue.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AgendaApi_Blue.Models;
+using AgendaApi_Blue.Data;
 
 namespace AgendaApi_Blue.Repositories
 {

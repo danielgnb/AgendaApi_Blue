@@ -3,15 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using AgendaApi_Blue.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AgendaApi_Blue.Utilitaries;
+using AgendaApi_Blue.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using AgendaApi_Blue.Models;
 using FluentValidation;
 using AutoMapper;
 using System.Net;
-using AgendaApi_Blue.Services;
-using System.Security.Claims;
-using AgendaApi_Blue.Exceptions;
 
 namespace AgendaApi_Blue.Controllers
 {
@@ -67,12 +65,6 @@ namespace AgendaApi_Blue.Controllers
         {
             try
             {
-                // TODO: Atualizar Role da Claim após edição dos mesmos
-
-                var usuarioLogado = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "UsuarioId")?.Value);
-                var roleLogada = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                await _usuarioService.ValidarEditar(usuarioLogado, roleLogada, id);
-
                 var usuario = _mapper.Map<Usuario>(request);
 
                 var validationResult = await _usuarioValidator.ValidateAsync(usuario);
@@ -129,7 +121,7 @@ namespace AgendaApi_Blue.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = nameof(Enums.Role.Admin))]
+        [Authorize]
         public async Task<IActionResult> Obter(int id)
         {
             try
