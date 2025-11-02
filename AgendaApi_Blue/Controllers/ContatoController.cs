@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AgendaApi_Blue.Models.ViewModels.Contato;
+using Microsoft.AspNetCore.Authorization;
+using AgendaApi_Blue.Services.Interfaces;
+using AgendaApi_Blue.Utilitaries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using FluentValidation;
 using AgendaApi_Blue.Models;
+using FluentValidation;
 using System.Net;
-using AgendaApi_Blue.Services.Interfaces;
-using AgendaApi_Blue.Models.ViewModels.Contato;
-using Azure.Core;
 using AutoMapper;
 
 namespace AgendaApi_Blue.Controllers
@@ -30,6 +30,7 @@ namespace AgendaApi_Blue.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(Enums.Role.Admin))]
         public async Task<IActionResult> GetContatos()
         {
             try

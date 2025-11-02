@@ -1,0 +1,19 @@
+﻿[LOGIN] → Gera (accessToken + refreshToken)
+    ↓
+[Bearer accessToken] → Requisições autorizadas
+    ↓
+(accessToken expira em 1h)
+    ↓
+[POST /refresh-token] → Envia refreshToken
+    ↓
+Backend valida o refreshToken:
+    • Se accessToken ainda válido → 409 Conflict ("Ainda não é necessário refresh")
+    • Se accessToken expirado → Gera novos tokens
+    ↓
+[OK] → Retorna novo accessToken + refreshToken
+    ↓
+Usuário continua logado (sem relogar)
+    ↓
+(refreshToken expira em 7 dias)
+    ↓
+[LOGIN NOVAMENTE] → Usuário precisa se autenticar novamente

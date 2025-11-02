@@ -8,5 +8,6 @@ namespace AgendaApi_Blue.Services.Interfaces
         Task<bool> CriarUsuario(Usuario usuario);
         Task<bool> ExcluirUsuario(int id);
         Task<Usuario?> ObterUsuario(int id);
+        Task<bool> EditarUsuario(Usuario usuario, int id);
     }
 }

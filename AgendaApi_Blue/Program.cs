@@ -47,7 +47,16 @@ builder.Services.AddSwaggerGen(options =>
 // Configuração do DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionRDS"));
+    var environment = builder.Environment.EnvironmentName;
+
+    if (environment == Environments.Development)
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionLocal"));
+    }
+    else if (environment == Environments.Production)
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionRDS"));
+    }
 });
 
 // Injeção de dependência para serviços e repositórios
@@ -56,6 +65,9 @@ builder.Services.AddScoped<IContatoRepository, ContatoRepository>();
 
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 builder.Services.AddSingleton<IRabbitMqService, RabbitMqService>();
 builder.Services.AddScoped<IAuthService, AuthService>();

@@ -12,6 +12,7 @@ namespace AgendaApi_Blue.Data
 
         public DbSet<Contato> Contatos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Login> Login { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,14 +1,14 @@
 ﻿using AgendaApi_Blue.Models.ViewModels.Usuario;
-using AgendaApi_Blue.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AgendaApi_Blue.Services.Interfaces;
-using AutoMapper;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using AgendaApi_Blue.Services;
+using AgendaApi_Blue.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using AgendaApi_Blue.Utilitaries;
+using AgendaApi_Blue.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using AgendaApi_Blue.Models;
+using FluentValidation;
+using AutoMapper;
 using System.Net;
 
 namespace AgendaApi_Blue.Controllers
@@ -31,7 +31,7 @@ namespace AgendaApi_Blue.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarUsuario([FromBody] UsuarioViewModel request)
+        public async Task<IActionResult> Criar([FromBody] UsuarioViewModel request)
         {
             try
             {
@@ -47,7 +47,44 @@ namespace AgendaApi_Blue.Controllers
                     return BadRequest("Usuário já existe.");
 
                 _rabbitMqService.EnviarMensagem($"Usuário criado: {usuario.Username}");
-                return CreatedAtAction(nameof(CriarUsuario), "Usuário criado com sucesso.");
+                return CreatedAtAction(nameof(Criar), "Usuário criado com sucesso.");
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao salvar usuário no banco de dados.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro inesperado.");
+            }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Editar([FromBody] UsuarioViewModel request, int id)
+        {
+            try
+            {
+                var usuario = _mapper.Map<Usuario>(request);
+
+                var validationResult = await _usuarioValidator.ValidateAsync(usuario);
+                if (!validationResult.IsValid)
+                    return BadRequest(validationResult.Errors);
+
+                var sucesso = await _usuarioService.EditarUsuario(usuario, id);
+                if (!sucesso)
+                    return BadRequest("Falha ao editar usuário.");
+
+                _rabbitMqService.EnviarMensagem($"Usuário editado: {usuario.Username}");
+                return Ok("Usuário editado com sucesso.");
+            }
+            catch (UsuarioNaoAutorizadoException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+            }
+            catch (UsuarioNaoEncontradoException ex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, ex.Message);
             }
             catch (DbUpdateException)
             {
@@ -60,8 +97,8 @@ namespace AgendaApi_Blue.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<IActionResult> ExcluirUsuario(int id)
+        [Authorize(Roles = nameof(Enums.Role.Admin))]
+        public async Task<IActionResult> Excluir(int id)
         {
             try
             {
@@ -84,7 +121,8 @@ namespace AgendaApi_Blue.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUsuario(int id)
+        [Authorize]
+        public async Task<IActionResult> Obter(int id)
         {
             try
             {
