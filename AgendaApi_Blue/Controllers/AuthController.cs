@@ -89,6 +89,8 @@ namespace AgendaApi_Blue.Controllers
                 });
 
                 return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
+
+                // TODO: Remover linha
             }
             catch (Exception ex)
             {
