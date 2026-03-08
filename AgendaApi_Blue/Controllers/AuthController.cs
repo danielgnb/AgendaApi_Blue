@@ -49,7 +49,7 @@ namespace AgendaApi_Blue.Controllers
             {
                 return BadRequest(ex.Errors);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Ocorreu um erro inesperado.");
             }         
@@ -89,10 +89,8 @@ namespace AgendaApi_Blue.Controllers
                 });
 
                 return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
-
-                // TODO: Remover linha
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Ocorreu um erro inesperado.");
             }

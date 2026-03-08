@@ -42,7 +42,7 @@ namespace AgendaApi_Blue.Controllers
             {
                 return StatusCode((int)HttpStatusCode.RequestTimeout, "O tempo de conexão com o banco de dados expirou. Tente novamente mais tarde.");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Erro ao se comunicar com o banco de dados. Tente novamente mais tarde.");
             }
@@ -68,7 +68,7 @@ namespace AgendaApi_Blue.Controllers
             {
                 return StatusCode((int)HttpStatusCode.RequestTimeout, "O tempo de conexão com o banco de dados expirou. Tente novamente mais tarde.");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Erro ao se comunicar com o banco de dados. Tente novamente mais tarde.");
             }
@@ -94,7 +94,7 @@ namespace AgendaApi_Blue.Controllers
             {
                 return StatusCode((int)HttpStatusCode.RequestTimeout, "O tempo de conexão com o banco de dados expirou. Tente novamente mais tarde.");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Erro ao se comunicar com o banco de dados. Tente novamente mais tarde.");
             }
@@ -138,11 +138,11 @@ namespace AgendaApi_Blue.Controllers
             {
                 return StatusCode((int)HttpStatusCode.RequestTimeout, "O tempo de conexão com o banco de dados expirou. Tente novamente mais tarde.");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Erro ao se comunicar com o banco de dados. Tente novamente mais tarde.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Ocorreu um erro inesperado. Tente novamente mais tarde.");
             }
@@ -181,7 +181,7 @@ namespace AgendaApi_Blue.Controllers
             {
                 return StatusCode((int)HttpStatusCode.RequestTimeout, "O tempo de conexão com o banco de dados expirou. Tente novamente mais tarde.");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Erro ao se comunicar com o banco de dados. Tente novamente mais tarde.");
             }
@@ -212,7 +212,7 @@ namespace AgendaApi_Blue.Controllers
             {
                 return StatusCode((int)HttpStatusCode.RequestTimeout, "O tempo de conexão com o banco de dados expirou. Tente novamente mais tarde.");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Erro ao se comunicar com o banco de dados. Tente novamente mais tarde.");
             }
